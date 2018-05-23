@@ -1,0 +1,30 @@
+{
+  "name": "electron-auto-setting",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-webpack dev",
+    "compile": "electron-webpack",
+    "dist": "npm run compile && electron-builder",
+    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null"
+  },
+  "dependencies": {
+    "source-map-support": "^0.5.6"
+  },
+  "devDependencies": {
+    "electron": "^2.0.1",
+    "electron-builder": "^20.13.4",
+    "electron-webpack": "^2.1.1",
+    "electron-webpack-vue": "^2.1.3",
+    "vue": "^2.5.16",
+    "webpack": "^4.8.3"
+  },
+  "resolutions": {
+    "webpack-sources": "1.0.1"
+  },
+  "electronWebpack": {
+    "renderer": {
+      "webpackConfig": ""
+    }
+  }
+}
