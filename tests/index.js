@@ -1,10 +1,26 @@
-const { setting, window, default: init } = require('../lib')
+const { default: create, init } = require('..')
 const { app } = require('electron')
 
-init(require.resolve('./setting.js'))
-  .then(win => {
-    win.show()
-    console.log(win)
-    win.loadURL('http://localhost:9080')
-  })
-  .catch(console.error)
+let setting = {
+  gender: {
+    type: 'choice',
+    label: '性别',
+    choices: ['male', 'female'],
+    defaultValue: 'male'
+  },
+  path: {
+    type: 'path',
+    label: '保存路径',
+    defaultValue: __dirname
+  },
+  output: {
+    type: 'boolean',
+    label: '是否保存',
+    defaultValue: true
+  }
+}
+
+app.on('ready', () => {
+  let win = create()
+  init(win, setting)
+})

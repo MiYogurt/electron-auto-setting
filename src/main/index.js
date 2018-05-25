@@ -3,61 +3,60 @@ import * as path from 'path'
 import { format as formatUrl } from 'url'
 import Store from 'electron-store'
 
-const store = new Store()
-
-let setting = {
-  gender: {
-    type: 'choice',
-    label: '性别',
-    choices: ['male', 'female'],
-    defaultValue: 'male'
-  },
-  path: {
-    type: 'path',
-    label: '保存路径',
-    defaultValue: __dirname
-  },
-  output: {
-    type: 'boolean',
-    label: '是否保存',
-    defaultValue: true
-  }
-}
-
-ipcMain.on('setting', event => {
-  Object.keys(setting).forEach(key => {
-    setting[key].value = store.get(key)
-  })
-  event.returnValue = setting
-})
-
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
-// global reference to mainWindow (necessary to prevent window from being garbage collected)
-let mainWindow
+function init(mainWindow, setting) {
+  const store = new Store()
 
-ipcMain.on('get:path', (event, args) => {
-  console.log(args)
-  dialog.showOpenDialog(
-    mainWindow,
-    {
-      titie: '选择路径',
-      properties: ['openDirectory', 'createDirectory']
-    },
-    filePaths => {
-      console.log(filePaths)
-      if (filePaths && filePaths.length) {
-        store.set(args.key, filePaths[0])
-        event.sender.send('return', { key: args.key, value: filePaths[0] })
+  // let setting = {
+  //   gender: {
+  //     type: 'choice',
+  //     label: '性别',
+  //     choices: ['male', 'female'],
+  //     defaultValue: 'male'
+  //   },
+  //   path: {
+  //     type: 'path',
+  //     label: '保存路径',
+  //     defaultValue: __dirname
+  //   },
+  //   output: {
+  //     type: 'boolean',
+  //     label: '是否保存',
+  //     defaultValue: true
+  //   }
+  // }
+
+  ipcMain.on('setting', event => {
+    Object.keys(setting).forEach(key => {
+      setting[key].value = store.get(key)
+    })
+    event.returnValue = setting
+  })
+
+  ipcMain.on('get:path', (event, args) => {
+    console.log(args)
+    dialog.showOpenDialog(
+      mainWindow,
+      {
+        titie: '选择路径',
+        properties: ['openDirectory', 'createDirectory']
+      },
+      filePaths => {
+        console.log(filePaths)
+        if (filePaths && filePaths.length) {
+          store.set(args.key, filePaths[0])
+          event.sender.send('return', { key: args.key, value: filePaths[0] })
+        }
       }
-    }
-  )
-})
+    )
+  })
 
-ipcMain.on('set', (event, { key, value }) => {
-  store.set(key, value)
-  event.sender.send('return', { key, value })
-})
+  ipcMain.on('set', (event, { key, value }) => {
+    store.set(key, value)
+    event.sender.send('return', { key, value })
+  })
+}
 
 function createMainWindow() {
   const window = new BrowserWindow(...arguments)
@@ -71,7 +70,7 @@ function createMainWindow() {
   } else {
     window.loadURL(
       formatUrl({
-        pathname: path.join(__dirname, 'index.html'),
+        pathname: path.join(__dirname, '../renderer/index.html'),
         protocol: 'file',
         slashes: true
       })
@@ -92,24 +91,11 @@ function createMainWindow() {
   return window
 }
 
-// quit application when all windows are closed
-app.on('window-all-closed', () => {
-  // on macOS it is common for applications to stay open until the user explicitly quits
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+if (isDevelopment) {
+  app.on('ready', () => {
+    createMainWindow()
+  })
+}
 
-app.on('activate', () => {
-  // on macOS it is common to re-create a window even after all windows have been closed
-  if (mainWindow === null) {
-    mainWindow = createMainWindow()
-  }
-})
-
-// create main BrowserWindow when electron is ready
-app.on('ready', () => {
-  mainWindow = createMainWindow()
-})
-
-// export default createMainWindow
+export default createMainWindow
+export { init }
