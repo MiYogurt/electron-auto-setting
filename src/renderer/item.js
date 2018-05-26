@@ -11,19 +11,13 @@ export default {
   },
   mounted() {
     ipcRenderer.on('return', (event, args) => {
-      console.log('return')
-      console.log(args)
       if (this.name == args.key) {
-        console.log(this.conf)
         this.conf.value = args.value
       }
     })
   },
   render(h) {
-    console.dir(this)
     const { type, conf: config, name } = this
-    console.log(type)
-    console.log(config)
     const map = {
       boolean: () => {
         return (
@@ -50,18 +44,21 @@ export default {
           <Option value={choice}>{choice}</Option>
         ))
         return (
-          <Select
-            value={config.value || config.defaultValue}
-            onOn-change={value =>
-              ipcRenderer.send('set', {
-                key: this.name,
-                value
-              })
-            }
-            placeholder={config.label}
-          >
-            {choices}
-          </Select>
+          <div>
+            <h3>{config.label}</h3>
+            <Select
+              value={config.value || config.defaultValue}
+              onOn-change={value =>
+                ipcRenderer.send('set', {
+                  key: this.name,
+                  value
+                })
+              }
+              placeholder={config.label}
+            >
+              {choices}
+            </Select>
+          </div>
         )
       },
       path: () => {
@@ -70,9 +67,12 @@ export default {
             <h3>{config.label}</h3>
             <Input
               value={config.value || config.defaultValue}
-              onChange={e => console.log(e)}
+              onChange={value =>
+                ipcRenderer.send('set', { key: this.name, value })
+              }
             />
             <Button
+              size="small"
               onClick={e => {
                 ipcRenderer.send('get:path', { key: this.name })
               }}
@@ -83,9 +83,6 @@ export default {
         )
       }
     }
-
-    const instance = map[type]
-
-    return instance()
+    return <div class="item">{map[type]()}</div>
   }
 }

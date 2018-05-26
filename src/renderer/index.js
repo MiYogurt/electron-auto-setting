@@ -5,7 +5,11 @@ import { ipcRenderer } from 'electron'
 import 'at-ui-style/css/at.min.css'
 
 const app = new Vue({
-  data: ipcRenderer.sendSync('setting'),
+  data: {
+    setting: ipcRenderer.sendSync('setting'),
+    title: ipcRenderer.sendSync('title'),
+    isDev: ipcRenderer.sendSync('isDev')
+  },
   render: h => h(App)
 })
 
