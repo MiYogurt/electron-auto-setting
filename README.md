@@ -1,9 +1,12 @@
 # electron-auto-setting
 
+![screen](./screen.png)
+
 ## How to Use?
 
 ```js
-const { default: create, init, store } = require('..')
+const { default: create, init, store } = require('electron-auto-setting')
+// import create, { init, store } from 'electron-auto-setting'
 const { app, Menu, Tray } = require('electron')
 const { resolve } = require('path')
 
