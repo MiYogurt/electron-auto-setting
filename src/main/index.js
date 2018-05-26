@@ -53,6 +53,9 @@ function init(setting, title) {
 }
 
 function createMainWindow(windowConfig) {
+  if (mainWindow) {
+    return mainWindow.focus()
+  }
   mainWindow = new BrowserWindow(
     Object.assign({}, windowConfig, {
       frame: false,
