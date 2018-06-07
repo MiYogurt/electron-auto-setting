@@ -1,6 +1,6 @@
 # electron-auto-setting
 
-![screen](./screen.png)
+<center>![screen](./screen.png)</center>
 
 ## How to Use?
 
