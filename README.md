@@ -5,36 +5,42 @@
 ## How to Use?
 
 ```js
-const { default: create, init, store } = require('electron-auto-setting')
-// import create, { init, store } from 'electron-auto-setting'
+import create, { init, store } from 'electron-auto-setting'
 const { app, Menu, Tray } = require('electron')
 const { resolve } = require('path')
 
-let setting = {
-  gender: {
-    type: 'choice',
-    label: '性别',
-    choices: ['male', 'female'],
-    defaultValue: 'male'
-  },
-  path: {
-    type: 'path',
-    label: '保存路径',
-    defaultValue: __dirname
-  },
-  output: {
-    type: 'boolean',
-    label: '是否保存',
-    defaultValue: true
+let setting = [
+  {
+    icon: 'icon-settings',
+    label: '设置',
+    configs: {
+      gender: {
+        type: 'choice',
+        label: '性别',
+        choices: ['male', 'female'],
+        defaultValue: 'male'
+      },
+      path: {
+        type: 'path',
+        label: '保存路径',
+        defaultValue: __dirname
+      },
+      output: {
+        type: 'boolean',
+        label: '是否保存',
+        defaultValue: true
+      }
+    }
   }
-}
+]
 
 let win = null
 let tray = null
 
+init(setting)
+
 openSetting = () => {
   win = create()
-  init(setting, '大大的设置')
   store.onDidChange('gender', console.log)
   console.log(store.store)
 }
@@ -54,6 +60,10 @@ app.on('window-all-closed', () => {
   }
 })
 ```
+
+## icon
+
+https://at-ui.github.io/at-ui/#/zh/docs/icon
 
 ## Type
 

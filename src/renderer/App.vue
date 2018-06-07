@@ -1,23 +1,30 @@
 <template>
   <div id="app">
-    <h2>{{title}}</h2>
-    <template v-for="(config, key) in setting">
-      <span v-if="isDev">{{ config }} - {{ key }}</span>
-      <Item :type="config.type" :name="key" :config="config"/>
+    <template v-for="(group, key) in setting">
+      <tabs :animated="false">
+      <tab-pane :label="group.label" :name="group.configs.toString()" :icon="group.icon">
+        <item :config="config" :key="key" :name="key" :type="config.type" v-for="(config, key) in group.configs"/>
+      </tab-pane>
+    </tabs>
     </template>
-    <div><at-button class="save" type="primary" @click="hidden">保存设置</at-button></div>
+    <div class="control">
+      <at-button class="cancel" @click="reset">恢复默认</at-button>
+      <at-button class="save" type="primary" @click="hidden">保存配置</at-button>
+    </div>
   </div>
 </template>
 
 
 <script>
-import { Button } from 'at-ui'
+import { Button, Tabs, TabPane } from 'at-ui'
 import Item from './item.js'
 import { ipcRenderer } from 'electron'
 export default {
   components: {
     Item,
-    AtButton: Button
+    AtButton: Button,
+    Tabs,
+    TabPane
   },
   data() {
     return this.$root.$data
@@ -28,6 +35,10 @@ export default {
   methods: {
     hidden() {
       ipcRenderer.send('hidden')
+    },
+    reset() {
+      ipcRenderer.send('settingRest')
+      this.$Message.success('已重置为默认设置')
     }
   }
 }
@@ -35,18 +46,27 @@ export default {
 
 <style scoped>
 #app {
+  max-height: 100vh;
+}
+
+.at-tabs {
+  min-height: 80vh;
+  overflow: scroll;
   padding: 0.5rem;
 }
 
-h2 {
-  -webkit-app-region: drag;
-  text-align: center;
-  padding: 0.5rem 0;
+.control {
+  padding: 0.5rem;
+  box-sizing: border-box;
+  display: flex;
+  min-height: 20vh;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #eee;
 }
-
+.cancel,
 .save {
-  margin: 1rem auto;
-  display: block;
+  padding: 0.5rem 2rem;
 }
 </style>
 

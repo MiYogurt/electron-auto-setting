@@ -1,6 +1,8 @@
 import { Input, Switch, Checkbox, Button, Select, Option } from 'at-ui'
 import { ipcRenderer } from 'electron'
 
+let inputTimer = null
+
 export default {
   name: 'Item',
   props: ['config', 'type', 'name'],
@@ -13,6 +15,11 @@ export default {
     ipcRenderer.on('return', (event, args) => {
       if (this.name == args.key) {
         this.conf.value = args.value
+
+        // fix switch no bind error
+        if (this.type == 'boolean') {
+          this.$children[0].checkStatus = args.value
+        }
       }
     })
   },
@@ -24,15 +31,11 @@ export default {
           <div>
             <h3>{config.label}</h3>
             <Switch
-              value={
-                config.value == undefined || config.value == null
-                  ? config.defaultValue
-                  : config.value
-              }
-              onChange={e =>
+              value={config.value || false}
+              onChange={value =>
                 ipcRenderer.send('set', {
                   key: this.name,
-                  value: !config.value
+                  value: value
                 })
               }
             />
@@ -67,9 +70,14 @@ export default {
             <h3>{config.label}</h3>
             <Input
               value={config.value || config.defaultValue}
-              onChange={value =>
-                ipcRenderer.send('set', { key: this.name, value })
-              }
+              onChange={value => {
+                if (inputTimer) {
+                  clearTimeout(inputTimer)
+                }
+                inputTimer = setTimeout(() => {
+                  ipcRenderer.send('set', { key: this.name, value })
+                }, 400)
+              }}
             />
             <Button
               size="small"
