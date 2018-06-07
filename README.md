@@ -1,6 +1,6 @@
 # electron-auto-setting
 
-<center><img src="./screen.png"></center>
+<img src="./screen.png" width="1920" />
 
 ## How to Use?
 
