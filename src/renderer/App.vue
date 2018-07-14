@@ -1,15 +1,13 @@
 <template>
   <div id="app">
-    <template v-for="(group, key) in setting">
-      <tabs :animated="false">
-      <tab-pane :label="group.label" :name="group.configs.toString()" :icon="group.icon">
+    <tabs>
+      <tab-pane v-for="(group, key) in setting" :label="group.label" :name="JSON.stringify(group.configs)" :icon="group.icon">
         <item :config="config" :key="key" :name="key" :type="config.type" v-for="(config, key) in group.configs"/>
       </tab-pane>
     </tabs>
-    </template>
     <div class="control">
-      <at-button class="cancel" @click="reset">恢复默认</at-button>
-      <at-button class="save" type="primary" @click="hidden">保存配置</at-button>
+      <at-button class="cancel" size="small" @click="reset">恢复默认</at-button>
+      <at-button class="save" size="small" type="primary" @click="hidden">保存配置</at-button>
     </div>
   </div>
 </template>
@@ -19,6 +17,8 @@
 import { Button, Tabs, TabPane } from 'at-ui'
 import Item from './item.js'
 import { ipcRenderer } from 'electron'
+const namespace = 'electron-auto-setting:'
+
 export default {
   components: {
     Item,
@@ -27,17 +27,22 @@ export default {
     TabPane
   },
   data() {
-    return this.$root.$data
+    return {
+      setting: [],
+      loading: true
+    }
   },
   mounted() {
-    console.log(this.$root.$data)
+    this.setting = ipcRenderer.sendSync(namespace+'setting')
+    this.loading = false
+    console.log(this.setting);
   },
   methods: {
     hidden() {
-      ipcRenderer.send('hidden')
+      ipcRenderer.send(namespace+'hidden')
     },
     reset() {
-      ipcRenderer.send('settingRest')
+      ipcRenderer.send(namespace+'settingRest')
       this.$Message.success('已重置为默认设置')
     }
   }
@@ -50,27 +55,36 @@ export default {
 }
 
 .at-tabs {
-  min-height: 80vh;
-  overflow: scroll;
-  padding: 0.5rem;
+  min-height: 90vh;
+  overflow-y: scroll;
 }
 
 .control {
-  padding: 0.5rem;
+  padding: 0 0.5rem;
   box-sizing: border-box;
   display: flex;
-  min-height: 20vh;
+  min-height: 10vh;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #eee;
 }
+
 .cancel,
 .save {
-  padding: 0.5rem 2rem;
+  padding: 0.4rem 2rem;
 }
 </style>
 
 <style>
+
+.at-tabs__header {
+  border-bottom: none !important;
+}
+
+.at-tabs__nav,
+.item {
+  padding: 0 .5rem
+}
+
 .item h3 {
   margin: 0.5rem 0;
   font-size: 0.8rem;

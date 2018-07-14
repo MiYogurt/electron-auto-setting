@@ -1,6 +1,6 @@
 {
   "name": "electron-auto-setting",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "license": "MIT",
   "main": "index.js",
   "scripts": {
@@ -8,16 +8,22 @@
     "compile": "electron-webpack",
     "babel": "babel -w src -d lib",
     "dist": "npm run compile && electron-builder",
-    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null"
+    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null",
+    "test": "DEBUG=electron-auto-setting electron ./tests/index.js"
   },
   "dependencies": {
     "at-ui": "^1.3.3",
     "at-ui-style": "^1.5.1",
+    "debug": "^3.1.0",
     "electron-store": "^1.3.0",
     "feather-icons": "^4.7.3",
     "source-map-support": "^0.5.6"
   },
-  "files": ["dist", "index.js", "screen.png"],
+  "files": [
+    "dist",
+    "index.js",
+    "screen.png"
+  ],
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.47",
     "@babel/core": "^7.0.0-beta.47",

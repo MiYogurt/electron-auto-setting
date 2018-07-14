@@ -9,11 +9,9 @@ import Message from 'at-ui/src/components/message/index'
 
 Vue.prototype.$Message = Message
 
+const namespace = 'electron-auto-setting:'
+
 const app = new Vue({
-  data: {
-    setting: ipcRenderer.sendSync('setting'),
-    isDev: ipcRenderer.sendSync('isDev')
-  },
   render: h => h(App)
 })
 

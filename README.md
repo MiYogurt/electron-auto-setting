@@ -31,6 +31,17 @@ let setting = [
         defaultValue: true
       }
     }
+  },
+  {
+    icon: 'icon-airplay',
+    label: '电脑',
+    configs: {
+      API_KEY: {
+        type: 'string',
+        label: 'API_KEY',
+        defaultValue: 'xxxx'
+      },
+    }
   }
 ]
 
@@ -70,3 +81,4 @@ https://at-ui.github.io/at-ui/#/zh/docs/icon
 * choice
 * path
 * boolean
+* string

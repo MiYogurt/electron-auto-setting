@@ -3,6 +3,8 @@ import { ipcRenderer } from 'electron'
 
 let inputTimer = null
 
+const namespace = 'electron-auto-setting:'
+
 export default {
   name: 'Item',
   props: ['config', 'type', 'name'],
@@ -12,7 +14,7 @@ export default {
     }
   },
   mounted() {
-    ipcRenderer.on('return', (event, args) => {
+    ipcRenderer.on(namespace+'return', (event, args) => {
       if (this.name == args.key) {
         this.conf.value = args.value
 
@@ -33,8 +35,8 @@ export default {
             <Switch
               value={config.value || false}
               onChange={value =>
-                ipcRenderer.send('set', {
-                  key: this.name,
+                ipcRenderer.send(namespace + 'set', {
+                  key: name,
                   value: value
                 })
               }
@@ -52,8 +54,8 @@ export default {
             <Select
               value={config.value || config.defaultValue}
               onOn-change={value =>
-                ipcRenderer.send('set', {
-                  key: this.name,
+                ipcRenderer.send(namespace + 'set', {
+                  key: name,
                   value
                 })
               }
@@ -75,18 +77,36 @@ export default {
                   clearTimeout(inputTimer)
                 }
                 inputTimer = setTimeout(() => {
-                  ipcRenderer.send('set', { key: this.name, value })
+                  ipcRenderer.send(namespace + 'set', { key: name, value })
                 }, 400)
               }}
             />
             <Button
               size="small"
               onClick={e => {
-                ipcRenderer.send('get:path', { key: this.name })
+                ipcRenderer.send(namespace + 'get:path', { key: name })
               }}
             >
               {config.showText || '打开目录'}
             </Button>
+          </div>
+        )
+      },
+      string: () => {
+        return (
+          <div>
+            <h3>{config.label}</h3>
+            <Input
+              value={config.value || config.defaultValue}
+              onChange={value => {
+                if (inputTimer) {
+                  clearTimeout(inputTimer)
+                }
+                inputTimer = setTimeout(() => {
+                  ipcRenderer.send(namespace + 'set', { key: this.name, value })
+                }, 400)
+              }}
+            />
           </div>
         )
       }
